@@ -1,5 +1,5 @@
 {
-  "name": "clarityai-web",
+  "name": "taskcompass-web",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,6 +12,7 @@
   "dependencies": {
     "@arco-design/web-vue": "^2.57.0",
     "axios": "^1.7.2",
+    "dayjs": "^1.11.20",
     "element-plus": "^2.7.7",
     "markdown-it": "^14.1.1",
     "pinia": "^3.0.4",

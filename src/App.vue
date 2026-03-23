@@ -3,51 +3,47 @@ import { RouterView } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Document, Setting, HomeFilled, CircleCheck, CircleClose, StarFilled } from '@element-plus/icons-vue'
+import { Document, Setting, HomeFilled, CircleCheck, CircleClose } from '@element-plus/icons-vue'
 import { apiService } from '@/utils/api'
 
+const OFFICIAL_API_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:5000/api'
 
 const router = useRouter()
 const showProjectList = ref(false)
 const showSettings = ref(false)
 const projects = ref([])
-const apiBaseUrl = ref('https://clarityapi.ycxhl.top/api')
-const serverType = ref('official') // 'official' 或 'custom'
+const apiBaseUrl = ref(OFFICIAL_API_URL)
+const serverType = ref('official')
 
-// 自定义 API 配置
-const apiConfigType = ref('default') // 'default' 或 'custom'
+const apiConfigType = ref('default')
 const customApiKey = ref('')
-const customApiBaseUrl = ref('')
-const customModel = ref('')
+const customApiBaseUrl = ref('https://api.openai.com/v1')
+const customModel = ref('gpt-4o-mini')
 
 const connectionStatus = ref('')
 const testingConnection = ref(false)
 
 onMounted(() => {
-  // 加载项目列表
   const savedProjects = localStorage.getItem('clarityai_projects')
   if (savedProjects) {
     projects.value = JSON.parse(savedProjects)
   }
-  
-  // 加载 API 地址
+
   const savedApiUrl = localStorage.getItem('clarityai_api_url')
   if (savedApiUrl) {
     apiBaseUrl.value = savedApiUrl
-    // 判断是官方还是自定义
-    if (savedApiUrl !== 'https://clarityapi.ycxhl.top/api') {
+    if (savedApiUrl !== OFFICIAL_API_URL) {
       serverType.value = 'custom'
     }
   }
-  
-  // 加载自定义 API 配置
+
   const savedApiConfig = localStorage.getItem('clarityai_api_config')
   if (savedApiConfig) {
     const config = JSON.parse(savedApiConfig)
     apiConfigType.value = config.type || 'default'
     customApiKey.value = config.apiKey || ''
-    customApiBaseUrl.value = config.baseUrl || ''
-    customModel.value = config.model || ''
+    customApiBaseUrl.value = config.baseUrl || 'https://api.openai.com/v1'
+    customModel.value = config.model || 'gpt-4o-mini'
   }
 })
 
@@ -55,47 +51,32 @@ const goToHome = () => {
   router.push('/')
 }
 
-const openGithub = () => {
-  window.open('https://github.com/YCXHL/ClarityAI-Frontend', '_blank')
-}
-
-const openBlog = () => {
-  window.open('https://www.ycxhl.top', '_blank')
-}
-
 const viewProjects = () => {
-  // 重新加载项目列表
   const savedProjects = localStorage.getItem('clarityai_projects')
-  if (savedProjects) {
-    projects.value = JSON.parse(savedProjects)
-  } else {
-    projects.value = []
-  }
+  projects.value = savedProjects ? JSON.parse(savedProjects) : []
   showProjectList.value = true
 }
 
 const deleteProject = async (projectId, index) => {
-  // 确认删除
-  const confirmed = await ElMessageBox.confirm('确定要删除此项目吗？此操作将同时删除本地记录和服务端数据，无法撤销。', '确认删除', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  })
-  
-  if (!confirmed) return
-  
   try {
-    // 先删除服务端数据
+    await ElMessageBox.confirm(
+      '確定要刪除此任務嗎？此操作會同時刪除本機紀錄與伺服器資料，且無法復原。',
+      '確認刪除',
+      {
+        confirmButtonText: '確認',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    )
+
     await apiService.deleteSession(projectId)
-    
-    // 再删除本地数据
     projects.value.splice(index, 1)
     localStorage.setItem('clarityai_projects', JSON.stringify(projects.value))
-    
-    ElMessage.success('项目已删除')
+    ElMessage.success('任務已刪除')
   } catch (error) {
+    if (error === 'cancel' || error === 'close') return
     console.error('Error deleting project:', error)
-    ElMessage.error('删除失败：' + (error.response?.data?.error || error.message))
+    ElMessage.error('刪除失敗：' + (error.response?.data?.error || error.message))
   }
 }
 
@@ -109,47 +90,75 @@ const openSettings = () => {
   connectionStatus.value = ''
 }
 
-const gotoGithub = () => {
-  window.location.href = "https://github.com/YCXHL/ClarityAI-Frontend";
-}
-
 const saveSettings = () => {
-  // 根据服务器类型设置地址
-  const finalUrl = serverType.value === 'official' 
-    ? 'https://clarityapi.ycxhl.top/api' 
-    : apiBaseUrl.value
-  
+  if (serverType.value === 'custom' && !apiBaseUrl.value.trim()) {
+    ElMessage.error('請輸入後端伺服器位址')
+    return
+  }
+
+  if (serverType.value === 'official' && apiConfigType.value === 'custom') {
+    ElMessage.error('若要使用自己的 OpenAI API，請先切換到本地或自訂後端伺服器')
+    return
+  }
+
+  if (apiConfigType.value === 'custom' && !customApiKey.value.trim()) {
+    ElMessage.error('請輸入 OpenAI API Key')
+    return
+  }
+
+  const finalUrl = serverType.value === 'official'
+    ? OFFICIAL_API_URL
+    : apiBaseUrl.value.trim()
+
+  const normalizedBaseUrl = customApiBaseUrl.value.trim() || 'https://api.openai.com/v1'
+  const normalizedModel = customModel.value.trim() || 'gpt-4o-mini'
+
   localStorage.setItem('clarityai_api_url', finalUrl)
-  
-  // 保存自定义 API 配置
+
   const apiConfig = {
     type: apiConfigType.value,
-    apiKey: customApiKey.value,
-    baseUrl: customApiBaseUrl.value,
-    model: customModel.value
+    apiKey: customApiKey.value.trim(),
+    baseUrl: apiConfigType.value === 'custom' ? normalizedBaseUrl : '',
+    model: apiConfigType.value === 'custom' ? normalizedModel : ''
   }
   localStorage.setItem('clarityai_api_config', JSON.stringify(apiConfig))
-  
-  ElMessage.success('设置已保存，请刷新页面生效')
+
+  if (apiConfigType.value === 'custom') {
+    customApiBaseUrl.value = normalizedBaseUrl
+    customModel.value = normalizedModel
+  }
+
+  ElMessage.success('設定已儲存，重新整理後生效')
   showSettings.value = false
 }
 
 const testConnection = async () => {
   testingConnection.value = true
   connectionStatus.value = ''
-  
+
   try {
-    const response = await fetch(`${apiBaseUrl.value.replace('/api', '')}/api/health`)
+    const targetApiUrl = (
+      serverType.value === 'official'
+        ? OFFICIAL_API_URL
+        : apiBaseUrl.value
+    ).trim()
+
+    if (!targetApiUrl) {
+      throw new Error('請先輸入後端伺服器位址')
+    }
+
+    const healthUrl = `${targetApiUrl.replace(/\/api\/?$/, '')}/api/health`
+    const response = await fetch(healthUrl)
     if (response.ok) {
       connectionStatus.value = 'success'
-      ElMessage.success('服务器连接成功！')
+      ElMessage.success('伺服器連線成功！')
     } else {
       connectionStatus.value = 'error'
-      ElMessage.error('服务器连接失败')
+      ElMessage.error('伺服器連線失敗')
     }
   } catch (error) {
     connectionStatus.value = 'error'
-    ElMessage.error('无法连接到服务器：' + error.message)
+    ElMessage.error('無法連線到伺服器：' + error.message)
   } finally {
     testingConnection.value = false
   }
@@ -157,118 +166,122 @@ const testConnection = async () => {
 
 const formatDate = (dateString) => {
   if (!dateString) return '未知'
-  const date = new Date(dateString)
-  return date.toLocaleString('zh-CN')
+  return new Date(dateString).toLocaleString('zh-TW')
 }
 </script>
 
 <template>
   <div class="app-container">
+    <div class="app-glow glow-left"></div>
+    <div class="app-glow glow-right"></div>
+
     <header class="app-header">
       <div class="header-content">
-        <h1 class="logo" @click="goToHome">ClarityAI</h1>
+        <button class="brand-lockup" type="button" @click="goToHome">
+          <span class="brand-mark">TC</span>
+          <span class="brand-copy">
+            <span class="brand-kicker">AI Requirement Launchpad</span>
+            <span class="logo">TaskCompass</span>
+          </span>
+        </button>
+
         <nav class="header-nav">
           <el-button @click="goToHome" text size="large">
             <el-icon><HomeFilled /></el-icon>
-            主页
+            首頁
           </el-button>
           <el-button @click="viewProjects" text size="large">
             <el-icon><Document /></el-icon>
-            项目历史记录
+            歷史任務
           </el-button>
           <el-button @click="openSettings" text size="large">
             <el-icon><Setting /></el-icon>
-            设置
+            設定
           </el-button>
-          <el-button @click="gotoGithub" text size="large">
-            <el-icon><StarFilled /></el-icon>
-            在Github上Star
-          </el-button>
-          <a href="https://ifdian.net/a/royandr"><img width="150" src="https://pic1.afdiancdn.com/static/img/welcome/button-sponsorme.png" alt=""></a >
         </nav>
-      </div> 
+      </div>
     </header>
+
     <main class="app-main">
       <RouterView />
     </main>
+
     <footer class="app-footer">
-      <p>
-        <span>ClarityAI - 懂你的项目需求</span><br />
-        <span class="footer-link" @click="openGithub">GitHub仓库</span>
-        <span class="footer-link" @click="openBlog">Royan的小站</span>
-      </p>
+      <p class="footer-brand">TaskCompass | 任務羅盤</p>
+      <p class="footer-copy">把模糊想法整理成可執行的需求簡報。</p>
     </footer>
 
-    <!-- 项目列表对话框 -->
-    <el-dialog v-model="showProjectList" title="项目历史记录列表" width="600px">
+    <el-dialog v-model="showProjectList" title="歷史任務列表" width="640px">
       <div v-if="projects.length === 0" class="empty-projects">
-        <el-empty description="暂无项目记录" />
+        <el-empty description="目前沒有任務紀錄" />
       </div>
       <div v-else class="project-list">
-        <div class="project-item" v-for="(project, index) in projects" :key="project.id">
+        <article class="project-item" v-for="(project, index) in projects" :key="project.id">
           <div class="project-info" @click="viewProject(project.id)">
-            <div class="project-name">{{ project.idea.substring(0, 50) }}{{ project.idea.length > 50 ? '...' : '' }}</div>
-            <div class="project-date">{{ formatDate(project.lastVisited) }}</div>
+            <div class="project-name">{{ project.idea.substring(0, 56) }}{{ project.idea.length > 56 ? '...' : '' }}</div>
+            <div class="project-date">最近開啟：{{ formatDate(project.lastVisited) }}</div>
           </div>
-          <el-button @click="deleteProject(project.id, index)" type="danger" size="small">删除</el-button>
-        </div>
+          <el-button @click="deleteProject(project.id, index)" type="danger" size="small">刪除</el-button>
+        </article>
       </div>
     </el-dialog>
 
-    <!-- 设置对话框 -->
-    <el-dialog v-model="showSettings" title="设置" width="600px">
+    <el-dialog v-model="showSettings" title="系統設定" width="640px">
       <el-form label-position="top">
-        <el-form-item label="服务器类型">
+        <el-form-item label="伺服器類型">
           <el-radio-group v-model="serverType">
-            <el-radio label="official">官方服务器</el-radio>
-            <el-radio label="custom">自定义服务器</el-radio>
+            <el-radio label="official">官方伺服器</el-radio>
+            <el-radio label="custom">自訂伺服器</el-radio>
           </el-radio-group>
+          <div class="form-tip">官方伺服器會使用環境變數中的 API 位址：{{ OFFICIAL_API_URL }}</div>
         </el-form-item>
-        <el-form-item label="后端服务器地址" v-if="serverType === 'custom'">
-          <el-input v-model="apiBaseUrl" placeholder="https://clarityapi.ycxhl.top/api" />
-          <div class="form-tip">请输入完整的 API 地址，例如：https://clarityapi.ycxhl.top/api，注意后面要加上“/api”!!</div>
+
+        <el-form-item label="後端伺服器位址" v-if="serverType === 'custom'">
+          <el-input v-model="apiBaseUrl" :placeholder="OFFICIAL_API_URL" />
+          <div class="form-tip">請輸入完整 API 位址，結尾需包含「/api」。</div>
         </el-form-item>
-        
-        <el-divider>AI 模型配置</el-divider>
-        
-        <el-form-item label="API 配置">
+
+        <el-divider>OpenAI API 設定</el-divider>
+
+        <el-form-item label="AI 來源">
           <el-radio-group v-model="apiConfigType">
-            <el-radio label="default">使用服务端默认配置</el-radio>
-            <el-radio label="custom">自定义 API 配置</el-radio>
+            <el-radio label="default">使用伺服器預設設定</el-radio>
+            <el-radio label="custom">使用我自己的 OpenAI API</el-radio>
           </el-radio-group>
+          <div class="form-tip">若要使用自己的 OpenAI API，請把上方伺服器切換成你的本地或自訂後端。</div>
         </el-form-item>
-        
+
         <template v-if="apiConfigType === 'custom'">
-          <el-form-item label="API Key">
+          <el-form-item label="OpenAI API Key">
             <el-input v-model="customApiKey" type="password" placeholder="sk-..." show-password />
-            <div class="form-tip">您的 API 密钥（仅存储在本地浏览器）</div>
+            <div class="form-tip">較安全的做法是直接寫進後端 `.env`。這裡的自訂欄位只適合你自己的本地或自建後端。</div>
           </el-form-item>
-          <el-form-item label="API 地址">
-            <el-input v-model="customApiBaseUrl" placeholder="https://dashscope.aliyuncs.com/compatible-mode/v1" />
-            <div class="form-tip">例如：https://dashscope.aliyuncs.com/compatible-mode/v1</div>
+          <el-form-item label="OpenAI API 位址">
+            <el-input v-model="customApiBaseUrl" placeholder="https://api.openai.com/v1" />
+            <div class="form-tip">若使用 OpenAI 官方 API，通常保持 `https://api.openai.com/v1` 即可。</div>
           </el-form-item>
-          <el-form-item label="模型名称">
-            <el-input v-model="customModel" placeholder="qwen-max" />
-            <div class="form-tip">推荐使用qwen-flash，速度快且准确率高</div>
+          <el-form-item label="模型名稱">
+            <el-input v-model="customModel" placeholder="gpt-4o-mini" />
+            <div class="form-tip">預設建議 `gpt-4o-mini`，成本較低，適合這個專案的問答與摘要流程。</div>
           </el-form-item>
         </template>
-        
-        <el-form-item label="测试连接">
+
+        <el-form-item label="測試後端連線">
           <el-button @click="testConnection" :loading="testingConnection" type="primary">
-            测试连接
+            測試連線
           </el-button>
           <div v-if="connectionStatus === 'success'" class="connection-status success">
-            <el-icon><CircleCheck /></el-icon> 连接成功
+            <el-icon><CircleCheck /></el-icon> 連線成功
           </div>
           <div v-if="connectionStatus === 'error'" class="connection-status error">
-            <el-icon><CircleClose /></el-icon> 连接失败
+            <el-icon><CircleClose /></el-icon> 連線失敗
           </div>
         </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="showSettings = false">取消</el-button>
-          <el-button type="primary" @click="saveSettings">保存设置</el-button>
+          <el-button @click="showSettings = false" type="info">取消</el-button>
+          <el-button type="primary" @click="saveSettings">儲存設定</el-button>
         </span>
       </template>
     </el-dialog>
@@ -276,110 +289,159 @@ const formatDate = (dateString) => {
 </template>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
-  background-color: #f5f7fa;
-}
-
 .app-container {
+  position: relative;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  padding: 28px 28px 20px;
+  overflow: hidden;
+}
+
+.app-glow {
+  position: fixed;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  filter: blur(48px);
+  opacity: 0.46;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.glow-left {
+  top: -140px;
+  left: -120px;
+  background: rgba(255, 184, 217, 0.8);
+}
+
+.glow-right {
+  top: 24%;
+  right: -140px;
+  background: rgba(255, 119, 191, 0.5);
+}
+
+.app-header,
+.app-main,
+.app-footer {
+  position: relative;
+  z-index: 1;
 }
 
 .app-header {
-  background: linear-gradient(135deg, #7c6ee4, #5e50e4);
-  color: white;
-  padding: 1rem 2rem;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  max-width: 1240px;
+  margin: 0 auto 34px;
 }
 
 .header-content {
-  max-width: 1200px;
-  margin: 0 auto;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 22px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  box-shadow: var(--surface-shadow-soft);
+  backdrop-filter: blur(18px);
+}
+
+.brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #2d2845, #4a46df);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  box-shadow: 0 18px 40px rgba(59, 54, 153, 0.24);
+}
+
+.brand-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.05;
+}
+
+.brand-kicker {
+  color: var(--brand-pink);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .logo {
-  font-size: 1.5rem;
-  font-weight: 600;
-  cursor: pointer;
-  margin: 0;
+  margin-top: 6px;
+  color: var(--ink-strong);
+  font-size: 1.42rem;
+  font-weight: 800;
 }
 
 .header-nav {
   display: flex;
-  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
 }
 
 .header-nav .el-button {
-  color: white;
-}
-
-.header-nav .el-button:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  min-width: 110px;
 }
 
 .app-main {
-  flex: 1;
-  padding: 2rem 0;
-  background-color: #f5f7fa;
+  max-width: 1240px;
+  margin: 0 auto;
 }
 
 .app-footer {
+  max-width: 1240px;
+  margin: 28px auto 0;
+  padding: 0 12px 20px;
   text-align: center;
-  padding: 1.5rem;
-  color: #909399;
-  background-color: white;
-  border-top: 1px solid #ebeef5;
 }
 
-.app-footer p {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 15px;
-  flex-wrap: wrap;
+.footer-brand {
+  margin: 0;
+  color: var(--ink-strong);
+  font-size: 0.95rem;
+  font-weight: 700;
 }
 
-.footer-link {
-  color: #409eff;
-  cursor: pointer;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.footer-link:hover {
-  color: #66b1ff;
-  text-decoration: underline;
+.footer-copy {
+  margin: 6px 0 0;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
 }
 
 .project-list {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 14px;
 }
 
 .project-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 15px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  transition: box-shadow 0.2s;
-}
-
-.project-item:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 18px 18px 22px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(220, 194, 231, 0.38);
 }
 
 .project-info {
@@ -388,44 +450,172 @@ body {
 }
 
 .project-name {
-  font-weight: 500;
-  color: #303133;
-  margin-bottom: 8px;
+  color: var(--ink-strong);
+  font-size: 1rem;
+  font-weight: 700;
+  word-break: break-word;
 }
 
 .project-date {
-  font-size: 0.85rem;
-  color: #909399;
+  margin-top: 4px;
+  color: var(--ink-soft);
+  font-size: 0.88rem;
 }
 
 .empty-projects {
-  padding: 40px 0;
+  padding: 28px 0;
 }
 
 .form-tip {
+  margin-top: 8px;
+  color: var(--ink-soft);
   font-size: 0.85rem;
-  color: #909399;
-  margin-top: 5px;
 }
 
 .connection-status {
-  margin-top: 10px;
-  display: flex;
+  margin-top: 12px;
+  display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+  color: var(--ink-body);
 }
 
 .connection-status.success {
-  color: #67c23a;
+  color: #2d9860;
 }
 
 .connection-status.error {
-  color: #f56c6c;
+  color: #d04c6e;
 }
 
 .dialog-footer {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .app-container {
+    padding: 18px 14px 18px;
+  }
+
+  .app-glow {
+    width: 300px;
+    height: 300px;
+    filter: blur(42px);
+  }
+
+  .header-content {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+    border-radius: 26px;
+  }
+
+  .header-nav {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-container {
+    padding: 14px 10px 14px;
+  }
+
+  .app-header {
+    margin-bottom: 18px;
+  }
+
+  .brand-lockup {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+
+  .brand-copy {
+    align-items: flex-start;
+  }
+
+  .brand-mark {
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+    font-size: 0.92rem;
+  }
+
+  .brand-kicker {
+    font-size: 0.64rem;
+    letter-spacing: 0.12em;
+  }
+
+  .logo {
+    font-size: 1.18rem;
+    margin-top: 4px;
+  }
+
+  .header-nav {
+    justify-content: stretch;
+    gap: 10px;
+  }
+
+  .header-nav .el-button {
+    min-width: auto;
+    flex: 1 1 100%;
+    justify-content: flex-start;
+    margin: 0;
+    padding-inline: 14px;
+  }
+
+  .app-footer {
+    margin-top: 18px;
+    padding: 0 4px 10px;
+  }
+
+  .footer-brand {
+    font-size: 0.88rem;
+  }
+
+  .project-item {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+  }
+
+  .project-item .el-button {
+    width: 100%;
+  }
+
+  .dialog-footer {
+    flex-direction: column-reverse;
+  }
+
+  .dialog-footer .el-button {
+    width: 100%;
+    margin: 0;
+  }
+
+  .form-tip,
+  .project-date {
+    line-height: 1.55;
+  }
+}
+
+@media (max-width: 420px) {
+  .header-content {
+    padding: 14px;
+  }
+
+  .brand-lockup {
+    align-items: flex-start;
+  }
+
+  .brand-copy {
+    min-width: 0;
+  }
+
+  .brand-kicker,
+  .logo {
+    word-break: break-word;
+  }
 }
 </style>

@@ -1,13 +1,19 @@
 import axios from 'axios'
 
+const OFFICIAL_API_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:5000/api'
+
 // 从 localStorage 获取 API 地址
 const getApiBaseUrl = () => {
   const savedUrl = localStorage.getItem('clarityai_api_url')
-  return savedUrl || 'https://clarityapi.ycxhl.top/api'
+  return savedUrl || OFFICIAL_API_URL
 }
 
 // 从 localStorage 获取自定义 API 配置
 const getCustomApiConfig = () => {
+  if (getApiBaseUrl() === OFFICIAL_API_URL) {
+    return null
+  }
+
   const savedConfig = localStorage.getItem('clarityai_api_config')
   if (savedConfig) {
     const config = JSON.parse(savedConfig)
@@ -56,20 +62,15 @@ const handleError = (error) => {
   if (error.response?.status === 429) {
     const data = error.response.data
     if (data.error === 'token_limit_reached') {
-      // 使用 ElMessageBox 显示带链接的提示
       import('element-plus').then(({ ElMessageBox }) => {
-        ElMessageBox.confirm(
-          '服务端已达单日 token 限额，请明日再试或切换/搭建个人服务端。\n\n提示：您可以查看历史记录和项目总览，这些功能不受影响。',
-          '服务限额提示',
+        ElMessageBox.alert(
+          '伺服器已達單日 token 限額，請稍後再試。你仍可查看歷史任務與任務總覽；若要繼續使用，請到「設定」改用自己的 OpenAI API 或自建後端。',
+          '服務限額提醒',
           {
-            confirmButtonText: '查看 GitHub 仓库',
-            cancelButtonText: '关闭',
+            confirmButtonText: '知道了',
             type: 'warning'
           }
-        ).then(() => {
-          // 点击确认按钮，打开 GitHub 仓库
-          window.open('https://github.com', '_blank')
-        })
+        )
       })
     }
   }

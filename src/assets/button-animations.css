@@ -1,251 +1,115 @@
-/* 全局按钮动效样式 */
-
-/* 基础按钮动效 */
 .el-button {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  border: none !important;
+  border-radius: 999px !important;
+  padding: 0.95rem 1.45rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em;
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    filter 0.22s ease !important;
 }
 
-.el-button::before {
+.el-button::after {
   content: '';
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
+  inset: 1px;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0));
+  pointer-events: none;
 }
 
-.el-button:hover::before {
-  width: 300px;
-  height: 300px;
+.el-button:hover {
+  transform: translateY(-2px);
+  filter: saturate(1.05);
 }
 
 .el-button:active {
-  transform: scale(0.95);
+  transform: translateY(0);
 }
 
-/* 主要按钮 */
 .el-button--primary {
-  background: linear-gradient(135deg, #409eff 0%, #66b1ff 100%);
-  border: none;
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
+  color: #fff !important;
+  background: linear-gradient(135deg, #cc2f7a 0%, #ff73b8 100%) !important;
+  box-shadow:
+    0 14px 28px rgba(204, 47, 122, 0.24),
+    inset 0 -3px 0 rgba(129, 22, 78, 0.18) !important;
 }
 
-.el-button--primary:hover {
-  background: linear-gradient(135deg, #66b1ff 0%, #409eff 100%);
-  box-shadow: 0 6px 16px rgba(64, 158, 255, 0.4);
-  transform: translateY(-2px);
-}
-
-/* 成功按钮 */
 .el-button--success {
-  background: linear-gradient(135deg, #67c23a 0%, #85ce61 100%);
-  border: none;
-  box-shadow: 0 4px 12px rgba(103, 194, 58, 0.3);
+  color: #2f2140 !important;
+  background: linear-gradient(135deg, #ffd065 0%, #ffb24d 100%) !important;
+  box-shadow:
+    0 14px 28px rgba(255, 178, 77, 0.24),
+    inset 0 -3px 0 rgba(180, 111, 18, 0.18) !important;
 }
 
-.el-button--success:hover {
-  background: linear-gradient(135deg, #85ce61 0%, #67c23a 100%);
-  box-shadow: 0 6px 16px rgba(103, 194, 58, 0.4);
-  transform: translateY(-2px);
-}
-
-/* 警告按钮 */
 .el-button--warning {
-  background: linear-gradient(135deg, #e6a23c 0%, #ebb563 100%);
-  border: none;
-  box-shadow: 0 4px 12px rgba(230, 162, 60, 0.3);
+  color: #fff !important;
+  background: linear-gradient(135deg, #5347eb 0%, #6d8cff 100%) !important;
+  box-shadow:
+    0 14px 28px rgba(91, 87, 238, 0.24),
+    inset 0 -3px 0 rgba(46, 41, 155, 0.18) !important;
 }
 
-.el-button--warning:hover {
-  background: linear-gradient(135deg, #ebb563 0%, #e6a23c 100%);
-  box-shadow: 0 6px 16px rgba(230, 162, 60, 0.4);
-  transform: translateY(-2px);
-}
-
-/* 信息按钮 */
 .el-button--info {
-  background: linear-gradient(135deg, #909399 0%, #a6a9ad 100%);
-  border: none;
-  box-shadow: 0 4px 12px rgba(144, 147, 153, 0.3);
+  color: #2d2044 !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 245, 251, 0.92)) !important;
+  box-shadow:
+    0 14px 28px rgba(112, 87, 131, 0.12),
+    inset 0 -3px 0 rgba(171, 141, 194, 0.18) !important;
 }
 
-.el-button--info:hover {
-  background: linear-gradient(135deg, #a6a9ad 0%, #909399 100%);
-  box-shadow: 0 6px 16px rgba(144, 147, 153, 0.4);
-  transform: translateY(-2px);
-}
-
-/* 危险按钮 */
 .el-button--danger {
-  background: linear-gradient(135deg, #f56c6c 0%, #f78989 100%);
-  border: none;
-  box-shadow: 0 4px 12px rgba(245, 108, 108, 0.3);
+  color: #fff !important;
+  background: linear-gradient(135deg, #ff6b8a 0%, #ff8e6e 100%) !important;
+  box-shadow:
+    0 14px 28px rgba(255, 107, 138, 0.22),
+    inset 0 -3px 0 rgba(161, 52, 74, 0.2) !important;
 }
 
-.el-button--danger:hover {
-  background: linear-gradient(135deg, #f78989 0%, #f56c6c 100%);
-  box-shadow: 0 6px 16px rgba(245, 108, 108, 0.4);
-  transform: translateY(-2px);
-}
-
-/* 文字按钮 */
+.el-button.is-text,
 .el-button--text {
-  background: transparent;
-  box-shadow: none;
+  color: var(--ink-body) !important;
+  background: rgba(255, 255, 255, 0.7) !important;
+  box-shadow:
+    0 12px 24px rgba(123, 95, 145, 0.08),
+    inset 0 -2px 0 rgba(160, 126, 184, 0.14) !important;
 }
 
-.el-button--text:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: none;
+.el-button.is-disabled,
+.el-button.is-disabled:hover {
+  color: rgba(94, 84, 119, 0.72) !important;
+  background: linear-gradient(135deg, rgba(230, 225, 236, 0.96), rgba(245, 240, 248, 0.96)) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
-/* 加载状态 */
-.el-button.is-loading {
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-
-/* 禁用状态 */
-.el-button.is-disabled {
-  background: #dcdfe6;
-  cursor: not-allowed;
-  box-shadow: none;
-  transform: none;
-}
-
-/* 卡片动效 */
 .el-card {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    transform 0.24s ease,
+    box-shadow 0.24s ease;
 }
 
 .el-card:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-3px);
+  box-shadow: 0 34px 88px rgba(197, 84, 154, 0.18) !important;
 }
 
-/* 输入框动效 */
-.el-input__wrapper {
-  transition: all 0.3s;
-  box-shadow: 0 0 0 1px #dcdfe6 inset;
+.el-dialog,
+.el-message {
+  animation: softRise 0.24s ease;
 }
 
-.el-input__wrapper:hover {
-  box-shadow: 0 0 0 1px #c0c4cc inset;
-}
-
-.el-input__wrapper.is-focus {
-  box-shadow: 0 0 0 1px #409eff inset;
-}
-
-/* 对话框动效 */
-.el-dialog {
-  animation: dialogSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes dialogSlideIn {
+@keyframes softRise {
   from {
     opacity: 0;
-    transform: translateY(-30px) scale(0.95);
+    transform: translateY(14px) scale(0.98);
   }
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
-}
-
-/* 消息提示动效 */
-.el-message {
-  animation: messageSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes messageSlideIn {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -100%);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-}
-
-/* 加载动画增强 */
-.el-loading-spinner .path {
-  stroke-dasharray: 90, 150;
-  stroke-dashoffset: 0;
-  stroke-linecap: round;
-  animation: loadingSpinner 1.5s ease-in-out infinite;
-}
-
-@keyframes loadingSpinner {
-  0% {
-    stroke-dasharray: 1, 200;
-    stroke-dashoffset: 0;
-    transform: rotate(0deg);
-  }
-  50% {
-    stroke-dasharray: 90, 150;
-    stroke-dashoffset: -40;
-    transform: rotate(180deg);
-  }
-  100% {
-    stroke-dasharray: 90, 150;
-    stroke-dashoffset: -120;
-    transform: rotate(360deg);
-  }
-}
-
-/* 滚动条美化 */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #409eff 0%, #66b1ff 100%);
-  border-radius: 4px;
-  transition: background 0.3s;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #66b1ff 0%, #409eff 100%);
-}
-
-/* 链接动效 */
-a {
-  position: relative;
-  transition: color 0.3s;
-}
-
-a::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 1px;
-  background: currentColor;
-  transition: width 0.3s;
-}
-
-a:hover::after {
-  width: 100%;
 }

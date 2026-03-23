@@ -1,8 +1,9 @@
 <template>
   <div class="results">
     <div class="header">
-      <h2>需求分析报告</h2>
-      <p>以下是根据您的回答生成的需求分析报告</p>
+      <span class="page-kicker">Task Brief</span>
+      <h2>需求分析簡報</h2>
+      <p>這份內容可以直接作為後續 AI、設計、開發或寫作工作的任務基礎。</p>
     </div>
     
     <el-card class="report-container" v-loading="loading">
@@ -17,14 +18,14 @@
         :loading="pdfGenerating"
         :disabled="loading"
       >
-        生成报告文档
+        產生報告文件
       </el-button>
       <el-button
         @click="continueRefinement"
         size="large"
         :disabled="loading"
       >
-        继续细化需求
+        繼續細化需求
       </el-button>
       <el-button
         @click="shareProject"
@@ -32,7 +33,7 @@
         size="large"
         :disabled="loading"
       >
-        分享项目
+        分享任務
       </el-button>
       <el-button
         @click="viewOverview"
@@ -40,31 +41,31 @@
         size="large"
         :disabled="loading"
       >
-        查看项目总览
+        查看任務總覽
       </el-button>
     </div>
     
     <!-- 下载链接 -->
     <div v-if="pdfUrl" class="pdf-download">
-      <p>报告已生成：</p>
+      <p>報告已產生：</p>
       <div class="download-options">
-        <el-button @click="downloadFullReport" type="primary" size="large">下载完整报告</el-button>
-        <el-button @click="downloadFinalReport" type="success" size="large">下载最终报告</el-button>
+        <el-button @click="downloadFullReport" type="primary" size="large">下載完整報告</el-button>
+        <el-button @click="downloadFinalReport" type="success" size="large">下載最終報告</el-button>
       </div>
     </div>
     
     <!-- 继续细化需求对话框 -->
     <el-dialog 
       v-model="showRefinementDialog" 
-      title="继续细化需求" 
+      title="繼續細化需求" 
       width="600px"
     >
-      <p>请告诉我您想要进一步细化或修改的方面：</p>
+      <p>請告訴我您還想進一步細化或修改的部分：</p>
       <el-input
         v-model="refinementFeedback"
         type="textarea"
         :autosize="{ minRows: 4, maxRows: 8 }"
-        placeholder="例如：我对之前的某个需求有新的想法..."
+        placeholder="例如：我對前面某項需求有新的想法..."
         maxlength="1000"
         show-word-limit
       />
@@ -76,7 +77,7 @@
             @click="submitRefinement"
             :loading="refinementSubmitting"
           >
-            确认提交
+            確認送出
           </el-button>
         </span>
       </template>
@@ -113,7 +114,7 @@ const renderMarkdown = (text) => {
 }
 
 onMounted(async () => {
-  document.title = '需求分析报告 - ClarityAI'
+  document.title = '需求分析簡報 | TaskCompass'
   try {
     // 从后端获取报告内容
     const response = await apiService.getSessionData(sessionId)
@@ -122,12 +123,12 @@ onMounted(async () => {
     if (reports && reports.length > 0) {
       reportContent.value = reports[reports.length - 1] // 获取最新报告
     } else {
-      reportContent.value = '暂无分析报告，请先完成问题回答。'
+      reportContent.value = '目前沒有分析報告，請先完成問題回答。'
     }
   } catch (error) {
     console.error('Error loading report:', error)
-    ElMessage.error('加载报告失败')
-    reportContent.value = '加载报告时出现错误，请稍后重试。'
+    ElMessage.error('載入報告失敗')
+    reportContent.value = '載入報告時發生錯誤，請稍後再試。'
   } finally {
     loading.value = false
   }
@@ -140,10 +141,10 @@ const generatePdf = async () => {
     const response = await apiService.generatePdf(sessionId)
     pdfUrl.value = response.data.pdf_url
 
-    ElMessage.success('PDF文档生成成功！')
+    ElMessage.success('PDF 文件產生成功！')
   } catch (error) {
     console.error('Error generating PDF:', error)
-    ElMessage.error('生成PDF文档失败，请稍后重试')
+    ElMessage.error('產生 PDF 文件失敗，請稍後再試')
   } finally {
     pdfGenerating.value = false
   }
@@ -151,15 +152,15 @@ const generatePdf = async () => {
 
 // 生成完整报告的Markdown内容
 const generateFullReport = (sessionData) => {
-  let markdownContent = '# 项目需求说明书\n\n';
+  let markdownContent = '# 任務需求簡報\n\n';
   
   // 添加原始想法
-  markdownContent += '## 1. 项目原始想法\n\n';
+  markdownContent += '## 1. 初始想法\n\n';
   markdownContent += `${sessionData.idea}\n\n`;
   
   // 添加问答内容
   if (sessionData.questions && sessionData.answers) {
-    markdownContent += '## 2. 需求澄清问答\n\n';
+    markdownContent += '## 2. 需求澄清問答\n\n';
     
     const minLen = Math.min(sessionData.questions.length, sessionData.answers.length);
     for (let i = 0; i < minLen; i++) {
@@ -176,10 +177,10 @@ const generateFullReport = (sessionData) => {
   
   // 添加分析报告
   if (sessionData.reports && sessionData.reports.length > 0) {
-    markdownContent += '## 3. 阶段性分析报告\n\n';
+    markdownContent += '## 3. 階段分析報告\n\n';
     
     for (let i = 0; i < sessionData.reports.length; i++) {
-      markdownContent += `### 第${i+1}次分析:\n`;
+      markdownContent += `### 第 ${i + 1} 次分析\n`;
       markdownContent += `${sessionData.reports[i]}\n\n`;
     }
   }
@@ -189,21 +190,21 @@ const generateFullReport = (sessionData) => {
 
 // 生成最终报告的Markdown内容（仅包含最终总结）
 const generateFinalReport = (sessionData) => {
-  let markdownContent = '# 项目需求说明书（最终版）\n\n';
+  let markdownContent = '# 任務需求簡報（最終版）\n\n';
   
   // 添加原始想法
-  markdownContent += '## 项目概述\n\n';
+  markdownContent += '## 任務概述\n\n';
   markdownContent += `${sessionData.idea}\n\n`;
   
   // 添加最终分析报告
   if (sessionData.reports && sessionData.reports.length > 0) {
-    markdownContent += '## 需求分析总结\n\n';
+    markdownContent += '## 需求分析總結\n\n';
     
     // 使用最新的报告作为最终总结
     const latestReport = sessionData.reports[sessionData.reports.length - 1];
     markdownContent += `${latestReport}\n\n`;
   } else {
-    markdownContent += '暂无分析报告。\n\n';
+    markdownContent += '目前沒有分析報告。\n\n';
   }
   
   return markdownContent;
@@ -229,10 +230,10 @@ const downloadFullReport = async () => {
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
     
-    ElMessage.success('完整报告下载成功！');
+    ElMessage.success('完整報告下載成功！');
   } catch (error) {
     console.error('Error generating full report:', error);
-    ElMessage.error('生成完整报告失败，请稍后重试');
+    ElMessage.error('產生完整報告失敗，請稍後再試');
   }
 };
 
@@ -256,10 +257,10 @@ const downloadFinalReport = async () => {
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
     
-    ElMessage.success('最终报告下载成功！');
+    ElMessage.success('最終報告下載成功！');
   } catch (error) {
     console.error('Error generating final report:', error);
-    ElMessage.error('生成最终报告失败，请稍后重试');
+    ElMessage.error('產生最終報告失敗，請稍後再試');
   }
 };
 
@@ -271,7 +272,7 @@ const continueRefinement = () => {
 
 // 分享项目
 const shareProject = async () => {
-  const currentApiUrl = localStorage.getItem('clarityai_api_url') || 'http://localhost:5000/api'
+  const currentApiUrl = localStorage.getItem('clarityai_api_url') || 'http://127.0.0.1:5000/api'
   
   // 将后端地址编码后添加到链接中
   const encodedApiUrl = btoa(encodeURIComponent(currentApiUrl))
@@ -279,7 +280,7 @@ const shareProject = async () => {
   
   try {
     await navigator.clipboard.writeText(shareUrl)
-    ElMessage.success('链接已复制到剪贴板，可以分享给他人了！')
+    ElMessage.success('連結已複製到剪貼簿，可以直接分享給其他人。')
   } catch (error) {
     // 降级方案
     const textarea = document.createElement('textarea')
@@ -288,7 +289,7 @@ const shareProject = async () => {
     textarea.select()
     document.execCommand('copy')
     document.body.removeChild(textarea)
-    ElMessage.success('链接已复制到剪贴板，可以分享给他人了！')
+    ElMessage.success('連結已複製到剪貼簿，可以直接分享給其他人。')
   }
 }
 
@@ -299,7 +300,7 @@ const viewOverview = () => {
 
 const submitRefinement = async () => {
   if (!refinementFeedback.value.trim()) {
-    ElMessage.warning('请输入您的细化需求')
+    ElMessage.warning('請輸入想進一步細化的需求')
     return
   }
   
@@ -313,13 +314,13 @@ const submitRefinement = async () => {
     showRefinementDialog.value = false
     refinementFeedback.value = ''
     
-    ElMessage.success('已收到您的细化需求，正在生成新问题...')
+    ElMessage.success('已收到您的細化需求，正在產生新問題...')
     
     // 跳转到问题页面
     router.push({ name: 'Questions', params: { sessionId } })
   } catch (error) {
     console.error('Error submitting refinement:', error)
-    ElMessage.error('提交细化需求失败，请稍后重试')
+    ElMessage.error('提交細化需求失敗，請稍後再試')
   } finally {
     refinementSubmitting.value = false
   }
@@ -328,34 +329,55 @@ const submitRefinement = async () => {
 
 <style scoped>
 .results {
-  max-width: 900px;
+  max-width: 1040px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 0 12px 48px;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
+  padding: 28px 24px;
+  border-radius: 30px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 244, 250, 0.86));
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  box-shadow: var(--surface-shadow-soft);
+}
+
+.page-kicker {
+  display: inline-flex;
+  padding: 0.52rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--brand-pink);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .header h2 {
-  font-size: 1.8rem;
-  color: #2c3e50;
-  margin-bottom: 10px;
+  margin: 16px 0 10px;
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--ink-strong);
+  line-height: 1.02;
 }
 
 .header p {
-  color: #7f8c8d;
+  max-width: 650px;
+  margin: 0 auto;
+  color: var(--ink-body);
 }
 
 .report-container {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   margin-bottom: 30px;
+  border-radius: 34px !important;
 }
 
 .report-content {
   line-height: 1.8;
-  color: #606266;
+  color: var(--ink-body);
+  overflow-wrap: anywhere;
 }
 
 .markdown-body {
@@ -372,7 +394,7 @@ const submitRefinement = async () => {
   margin-bottom: 16px;
   font-weight: 600;
   line-height: 1.25;
-  color: #2c3e50;
+  color: var(--ink-strong);
 }
 
 .markdown-body h1 {
@@ -408,8 +430,8 @@ const submitRefinement = async () => {
   padding: 0.2em 0.4em;
   margin: 0;
   font-size: 0.9em;
-  background-color: #f6f8fa;
-  border-radius: 4px;
+  background-color: rgba(244, 239, 248, 0.96);
+  border-radius: 10px;
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
 }
 
@@ -418,8 +440,8 @@ const submitRefinement = async () => {
   overflow: auto;
   font-size: 0.9em;
   line-height: 1.45;
-  background-color: #f6f8fa;
-  border-radius: 6px;
+  background-color: rgba(247, 242, 250, 0.92);
+  border-radius: 18px;
 }
 
 .markdown-body pre code {
@@ -435,12 +457,15 @@ const submitRefinement = async () => {
 
 .markdown-body blockquote {
   padding: 0 1em;
-  color: #6a737d;
-  border-left: 0.25em solid #dfe2e5;
+  color: var(--ink-soft);
+  border-left: 0.25em solid rgba(204, 47, 122, 0.26);
   margin: 0 0 16px 0;
 }
 
 .markdown-body table {
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-collapse: collapse;
   width: 100%;
   margin-bottom: 16px;
@@ -449,16 +474,17 @@ const submitRefinement = async () => {
 .markdown-body table th,
 .markdown-body table td {
   padding: 8px 12px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid rgba(214, 191, 226, 0.4);
 }
 
 .markdown-body table th {
-  background-color: #f6f8fa;
+  background-color: rgba(255, 242, 249, 0.84);
   font-weight: 600;
 }
 
 .actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 15px;
   justify-content: center;
   margin-bottom: 20px;
@@ -466,9 +492,11 @@ const submitRefinement = async () => {
 
 .pdf-download {
   text-align: center;
-  padding: 20px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
+  padding: 22px;
+  background: rgba(255, 255, 255, 0.76);
+  border-radius: 28px;
+  border: 1px solid rgba(218, 197, 228, 0.34);
+  box-shadow: var(--surface-shadow-soft);
 }
 
 .pdf-download a {
@@ -487,5 +515,117 @@ const submitRefinement = async () => {
   gap: 15px;
   justify-content: center;
   flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .results {
+    padding: 0 0 36px;
+  }
+
+  .header {
+    padding: 24px 18px;
+    border-radius: 24px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .actions .el-button,
+  .download-options .el-button {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .header {
+    padding: 20px 16px;
+    border-radius: 22px;
+    margin-bottom: 16px;
+  }
+
+  .header h2 {
+    margin: 14px 0 8px;
+    font-size: clamp(1.8rem, 9vw, 2.3rem);
+  }
+
+  .header p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .report-container {
+    margin-bottom: 20px;
+    border-radius: 24px !important;
+  }
+
+  .report-content {
+    font-size: 0.95rem;
+    line-height: 1.75;
+  }
+
+  .markdown-body h1 {
+    font-size: 1.34rem;
+  }
+
+  .markdown-body h2 {
+    font-size: 1.18rem;
+  }
+
+  .markdown-body h3 {
+    font-size: 1.04rem;
+  }
+
+  .markdown-body h1,
+  .markdown-body h2,
+  .markdown-body h3,
+  .markdown-body h4,
+  .markdown-body h5,
+  .markdown-body h6 {
+    margin-top: 20px;
+    margin-bottom: 12px;
+  }
+
+  .markdown-body p,
+  .markdown-body ul,
+  .markdown-body ol,
+  .markdown-body blockquote,
+  .markdown-body table {
+    margin-bottom: 14px;
+  }
+
+  .markdown-body pre {
+    padding: 12px;
+    border-radius: 14px;
+    font-size: 0.84em;
+  }
+
+  .markdown-body table th,
+  .markdown-body table td {
+    min-width: 120px;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+
+  .pdf-download {
+    padding: 18px 14px;
+    border-radius: 22px;
+  }
+
+  .download-options {
+    gap: 10px;
+  }
+
+  .dialog-footer {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+
+  .dialog-footer .el-button {
+    width: 100%;
+    margin: 0;
+  }
 }
 </style>

@@ -1,8 +1,9 @@
 <template>
   <div class="overview">
     <div class="header">
-      <h2>项目总览</h2>
-      <p>查看项目需求对齐的完整过程</p>
+      <span class="page-kicker">Timeline Overview</span>
+      <h2>任務總覽</h2>
+      <p>查看需求對齊的完整歷程。</p>
     </div>
 
     <el-card class="overview-container" v-loading="loading">
@@ -10,10 +11,10 @@
       <div class="timeline-section">
         <div class="timeline-header">
           <span class="icon-text">📋</span>
-          <h3>项目信息</h3>
+          <h3>任務資訊</h3>
         </div>
         <div class="project-info">
-          <p><strong>项目 ID:</strong> {{ sessionId }}</p>
+          <p><strong>任務 ID:</strong> {{ sessionId }}</p>
         </div>
       </div>
 
@@ -21,7 +22,7 @@
       <div class="timeline-section">
         <div class="timeline-header">
           <span class="icon-text">💡</span>
-          <h3>原始想法</h3>
+          <h3>初始想法</h3>
         </div>
         <div class="idea-content">
           {{ sessionData.idea }}
@@ -32,7 +33,7 @@
       <div class="timeline-section">
         <div class="timeline-header">
           <span class="icon-text">🔗</span>
-          <h3>需求对齐过程</h3>
+          <h3>需求對齊歷程</h3>
         </div>
 
         <div class="timeline">
@@ -40,12 +41,12 @@
           <div class="timeline-item" v-for="(round, index) in timelineData" :key="index">
             <div class="timeline-dot"></div>
             <div class="timeline-content">
-              <div class="round-title">第 {{ index + 1 }} 轮对齐</div>
+              <div class="round-title">第 {{ index + 1 }} 輪對齊</div>
               
               <!-- 问答部分 -->
               <div class="qa-section">
                 <div class="section-header" @click="toggleQa(index)">
-                  <h4><span class="icon-text">💬</span> 问答内容</h4>
+                  <h4><span class="icon-text">💬</span> 問答內容</h4>
                   <el-icon class="toggle-icon" :class="{ expanded: expandedQa.includes(index) }">
                     <ArrowRight />
                   </el-icon>
@@ -69,7 +70,7 @@
               <!-- 报告部分 -->
               <div class="report-section" v-if="round.report">
                 <div class="section-header" @click="toggleReport(index)">
-                  <h4><span class="icon-text">📝</span> 阶段性报告</h4>
+                  <h4><span class="icon-text">📝</span> 階段報告</h4>
                   <el-icon class="toggle-icon" :class="{ expanded: expandedReport.includes(index) }">
                     <ArrowRight />
                   </el-icon>
@@ -86,9 +87,9 @@
       <!-- 操作按钮 -->
       <div class="actions">
         <el-button @click="downloadFullProcess" type="primary" size="large">
-          下载完整对齐过程
+          下載完整對齊歷程
         </el-button>
-        <el-button @click="goBack" size="large">返回结果页</el-button>
+        <el-button @click="goBack" size="large">返回結果頁</el-button>
       </div>
     </el-card>
   </div>
@@ -99,7 +100,6 @@ import { ref, onMounted, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRoute, useRouter } from 'vue-router'
 import { apiService } from '@/utils/api'
-import { InfoFilled } from '@element-plus/icons-vue'
 import { ArrowRight } from '@element-plus/icons-vue'
 import MarkdownIt from 'markdown-it'
 
@@ -149,6 +149,18 @@ const renderMarkdown = (text) => {
   return md.render(text)
 }
 
+const formatAnswerForDisplay = (answer) => {
+  if (answer?.auto_infer) {
+    return '已使用預設推測，由 AI 依上下文補足'
+  }
+
+  if (typeof answer === 'string') {
+    return answer
+  }
+
+  return answer?.answer || ''
+}
+
 // 计算时间线数据（使用轮次数据，保持问答对应关系）
 const timelineData = computed(() => {
   if (rounds.value.length > 0) {
@@ -156,7 +168,7 @@ const timelineData = computed(() => {
     return rounds.value.map(round => ({
       qas: round.questions.map((q, index) => ({
         question: q?.text || '',
-        answer: round.answers[index]?.answer || ''
+        answer: formatAnswerForDisplay(round.answers[index])
       })),
       report: round.report,
       round_number: round.round_number,
@@ -180,7 +192,7 @@ const timelineData = computed(() => {
     for (let j = 0; j < qaCount; j++) {
       roundData.qas.push({
         question: questions[j]?.text || '',
-        answer: answers[j]?.answer || ''
+        answer: formatAnswerForDisplay(answers[j])
       })
     }
     
@@ -196,7 +208,7 @@ const timelineData = computed(() => {
     for (let j = 0; j < qaCount; j++) {
       roundData.qas.push({
         question: questions[j]?.text || '',
-        answer: answers[j]?.answer || ''
+        answer: formatAnswerForDisplay(answers[j])
       })
     }
     data.push(roundData)
@@ -206,7 +218,7 @@ const timelineData = computed(() => {
 })
 
 onMounted(async () => {
-  document.title = '项目总览 - ClarityAI'
+  document.title = '任務總覽 | TaskCompass'
   
   // 解析 URL 中的后端地址参数
   const urlParams = new URLSearchParams(window.location.search)
@@ -215,7 +227,7 @@ onMounted(async () => {
     try {
       const apiUrl = decodeURIComponent(atob(encodedApiUrl))
       localStorage.setItem('clarityai_api_url', apiUrl)
-      ElMessage.success('已自动配置后端服务器地址')
+      ElMessage.success('已自動設定後端伺服器位址')
     } catch (error) {
       console.error('Error parsing API URL:', error)
     }
@@ -246,7 +258,7 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error('Error loading session data:', error)
-    ElMessage.error('加载项目数据失败')
+    ElMessage.error('載入任務資料失敗')
   } finally {
     loading.value = false
   }
@@ -255,40 +267,40 @@ onMounted(async () => {
 const formatDate = (dateString) => {
   if (!dateString) return '未知'
   const date = new Date(dateString)
-  return date.toLocaleString('zh-CN')
+  return date.toLocaleString('zh-TW')
 }
 
 // 下载完整对齐过程
 const downloadFullProcess = () => {
-  let markdownContent = '# 项目需求对齐完整过程\n\n'
+  let markdownContent = '# 任務需求對齊完整歷程\n\n'
   
   // 项目信息
-  markdownContent += '## 项目信息\n\n'
-  markdownContent += `- **项目 ID:** ${sessionId}\n`
+  markdownContent += '## 任務資訊\n\n'
+  markdownContent += `- **任務 ID:** ${sessionId}\n`
   // 原始想法
-  markdownContent += '## 原始想法\n\n'
+  markdownContent += '## 初始想法\n\n'
   markdownContent += `${sessionData.value.idea}\n\n`
   
   // 对齐过程
-  markdownContent += '## 需求对齐过程\n\n'
+  markdownContent += '## 需求對齊歷程\n\n'
   
   // 优先使用轮次数据
   if (rounds.value.length > 0) {
     rounds.value.forEach((round, index) => {
-      markdownContent += `### 第 ${round.round_number || (index + 1)} 轮对齐\n\n`
-      markdownContent += `**时间:** ${formatDate(round.created_at)}\n\n`
+      markdownContent += `### 第 ${round.round_number || (index + 1)} 輪對齊\n\n`
+      markdownContent += `**時間：** ${formatDate(round.created_at)}\n\n`
       
       // 问答内容
-      markdownContent += '#### 问答内容\n\n'
+      markdownContent += '#### 問答內容\n\n'
       round.questions.forEach((q, qIndex) => {
-        const a = round.answers[qIndex]?.answer || ''
+        const a = formatAnswerForDisplay(round.answers[qIndex])
         markdownContent += `**Q${qIndex + 1}:** ${q.text || ''}\n\n`
         markdownContent += `**A${qIndex + 1}:** ${a}\n\n`
       })
       
       // 阶段性报告
       if (round.report) {
-        markdownContent += '#### 阶段性报告\n\n'
+        markdownContent += '#### 階段報告\n\n'
         markdownContent += `${round.report}\n\n`
       }
       
@@ -301,20 +313,20 @@ const downloadFullProcess = () => {
     const questions = sessionData.value.questions || []
     
     for (let i = 0; i < reports.length; i++) {
-      markdownContent += `### 第 ${i + 1} 轮对齐\n\n`
+      markdownContent += `### 第 ${i + 1} 輪對齊\n\n`
       
       // 问答内容
-      markdownContent += '#### 问答内容\n\n'
+      markdownContent += '#### 問答內容\n\n'
       const qaCount = Math.min(questions.length, answers.length)
       for (let j = 0; j < qaCount; j++) {
         const q = questions[j]?.text || ''
-        const a = answers[j]?.answer || ''
+        const a = formatAnswerForDisplay(answers[j])
         markdownContent += `**Q${j + 1}:** ${q}\n\n`
         markdownContent += `**A${j + 1}:** ${a}\n\n`
       }
       
       // 阶段性报告
-      markdownContent += '#### 阶段性报告\n\n'
+      markdownContent += '#### 階段報告\n\n'
       markdownContent += `${reports[i]}\n\n`
       
       markdownContent += '---\n\n'
@@ -322,11 +334,11 @@ const downloadFullProcess = () => {
     
     // 如果没有报告但有问答
     if (reports.length === 0 && answers.length > 0) {
-      markdownContent += '### 问答内容\n\n'
+      markdownContent += '### 問答內容\n\n'
       const qaCount = Math.min(questions.length, answers.length)
       for (let j = 0; j < qaCount; j++) {
         const q = questions[j]?.text || ''
-        const a = answers[j]?.answer || ''
+        const a = formatAnswerForDisplay(answers[j])
         markdownContent += `**Q${j + 1}:** ${q}\n\n`
         markdownContent += `**A${j + 1}:** ${a}\n\n`
       }
@@ -345,7 +357,7 @@ const downloadFullProcess = () => {
   window.URL.revokeObjectURL(url)
   document.body.removeChild(a)
   
-  ElMessage.success('完整对齐过程下载成功！')
+  ElMessage.success('完整對齊歷程下載成功！')
 }
 
 const goBack = () => {
@@ -355,24 +367,44 @@ const goBack = () => {
 
 <style scoped>
 .overview {
-  max-width: 1000px;
+  max-width: 1120px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 0 12px 48px;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
+  padding: 28px 24px;
+  border-radius: 30px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 244, 250, 0.86));
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  box-shadow: var(--surface-shadow-soft);
+}
+
+.page-kicker {
+  display: inline-flex;
+  padding: 0.52rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--brand-pink);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .header h2 {
-  font-size: 1.8rem;
-  color: #2c3e50;
-  margin-bottom: 10px;
+  margin: 16px 0 10px;
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--ink-strong);
+  line-height: 1.02;
 }
 
 .header p {
-  color: #7f8c8d;
+  max-width: 620px;
+  margin: 0 auto;
+  color: var(--ink-body);
 }
 
 .icon-text {
@@ -380,14 +412,10 @@ const goBack = () => {
   margin-right: 8px;
 }
 
-.overview-container {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
 .timeline-section {
   margin-bottom: 30px;
   padding-bottom: 20px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid rgba(220, 201, 229, 0.4);
 }
 
 .timeline-section:last-child {
@@ -404,7 +432,7 @@ const goBack = () => {
 
 .timeline-header h3 {
   margin: 0;
-  color: #2c3e50;
+  color: var(--ink-strong);
   font-size: 1.3rem;
 }
 
@@ -436,7 +464,7 @@ const goBack = () => {
 }
 
 .section-header:hover {
-  background-color: #f0f0f0;
+  background-color: rgba(255, 244, 250, 0.82);
 }
 
 .section-header h4 {
@@ -444,13 +472,13 @@ const goBack = () => {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #303133;
+  color: var(--ink-strong);
 }
 
 .toggle-icon {
   transition: transform 0.3s;
   font-size: 1.2rem;
-  color: #909399;
+  color: var(--ink-soft);
 }
 
 .toggle-icon.expanded {
@@ -458,23 +486,24 @@ const goBack = () => {
 }
 
 .project-info {
-  background-color: #f8f9fa;
+  background-color: rgba(255, 255, 255, 0.74);
   padding: 15px;
-  border-radius: 8px;
+  border-radius: 20px;
 }
 
 .project-info p {
   margin: 8px 0;
-  color: #606266;
+  color: var(--ink-body);
+  overflow-wrap: anywhere;
 }
 
 .idea-content {
-  background-color: #ecf5ff;
+  background: linear-gradient(180deg, rgba(255, 245, 250, 0.88), rgba(255, 255, 255, 0.8));
   padding: 20px;
-  border-radius: 8px;
-  border-left: 4px solid #409eff;
+  border-radius: 24px;
+  border-left: 4px solid var(--brand-pink);
   line-height: 1.8;
-  color: #303133;
+  color: var(--ink-strong);
 }
 
 .timeline {
@@ -489,7 +518,7 @@ const goBack = () => {
   top: 0;
   bottom: 0;
   width: 2px;
-  background-color: #e0e0e0;
+  background: linear-gradient(180deg, rgba(255, 191, 222, 0.1), rgba(195, 171, 224, 0.9));
 }
 
 .timeline-item {
@@ -504,24 +533,25 @@ const goBack = () => {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background-color: #409eff;
+  background: linear-gradient(135deg, var(--brand-pink), var(--brand-rose));
   border: 3px solid #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 14px 24px rgba(204, 47, 122, 0.26);
 }
 
 .timeline-content {
-  background-color: #fafafa;
+  background: rgba(255, 255, 255, 0.72);
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 26px;
+  border: 1px solid rgba(220, 201, 229, 0.34);
 }
 
 .round-title {
   font-size: 1.2rem;
   font-weight: bold;
-  color: #409eff;
+  color: var(--brand-pink);
   margin-bottom: 15px;
   padding-bottom: 10px;
-  border-bottom: 2px solid #e0e0e0;
+  border-bottom: 2px solid rgba(220, 201, 229, 0.34);
 }
 
 .qa-section,
@@ -536,10 +566,10 @@ const goBack = () => {
 }
 
 .qa-item {
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.82);
   padding: 15px;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  border: 1px solid rgba(220, 201, 229, 0.34);
 }
 
 .question,
@@ -549,15 +579,15 @@ const goBack = () => {
 }
 
 .question {
-  color: #303133;
+  color: var(--ink-strong);
   font-weight: 500;
 }
 
 .answer {
-  color: #67c23a;
-  background-color: #f0f9ff;
+  color: #2d9860;
+  background-color: rgba(239, 255, 245, 0.92);
   padding: 10px;
-  border-radius: 4px;
+  border-radius: 14px;
 }
 
 .qa-label {
@@ -566,12 +596,12 @@ const goBack = () => {
 }
 
 .report-content {
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.82);
   padding: 15px;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  border: 1px solid rgba(220, 201, 229, 0.34);
   line-height: 1.8;
-  color: #606266;
+  color: var(--ink-body);
 }
 
 .markdown-body {
@@ -588,7 +618,7 @@ const goBack = () => {
   margin-bottom: 16px;
   font-weight: 600;
   line-height: 1.25;
-  color: #2c3e50;
+  color: var(--ink-strong);
 }
 
 .markdown-body h1 {
@@ -624,8 +654,8 @@ const goBack = () => {
   padding: 0.2em 0.4em;
   margin: 0;
   font-size: 0.9em;
-  background-color: #f6f8fa;
-  border-radius: 4px;
+  background-color: rgba(244, 239, 248, 0.96);
+  border-radius: 10px;
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
 }
 
@@ -634,8 +664,8 @@ const goBack = () => {
   overflow: auto;
   font-size: 0.9em;
   line-height: 1.45;
-  background-color: #f6f8fa;
-  border-radius: 6px;
+  background-color: rgba(247, 242, 250, 0.92);
+  border-radius: 18px;
 }
 
 .markdown-body pre code {
@@ -651,8 +681,8 @@ const goBack = () => {
 
 .markdown-body blockquote {
   padding: 0 1em;
-  color: #6a737d;
-  border-left: 0.25em solid #dfe2e5;
+  color: var(--ink-soft);
+  border-left: 0.25em solid rgba(204, 47, 122, 0.26);
   margin: 0 0 16px 0;
 }
 
@@ -665,18 +695,194 @@ const goBack = () => {
 .markdown-body table th,
 .markdown-body table td {
   padding: 8px 12px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid rgba(214, 191, 226, 0.4);
 }
 
 .markdown-body table th {
-  background-color: #f6f8fa;
+  background-color: rgba(255, 242, 249, 0.84);
   font-weight: 600;
 }
 
 .actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 15px;
   justify-content: center;
   margin-top: 30px;
+}
+
+@media (max-width: 768px) {
+  .overview {
+    padding: 0 0 36px;
+  }
+
+  .header {
+    padding: 24px 18px;
+    border-radius: 24px;
+  }
+
+  .timeline {
+    padding-left: 24px;
+  }
+
+  .timeline-dot {
+    left: -21px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .actions .el-button {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .header {
+    padding: 20px 16px;
+    border-radius: 22px;
+    margin-bottom: 16px;
+  }
+
+  .header h2 {
+    margin: 14px 0 8px;
+    font-size: clamp(1.8rem, 9vw, 2.3rem);
+  }
+
+  .header p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .timeline-section {
+    margin-bottom: 22px;
+    padding-bottom: 16px;
+  }
+
+  .timeline-header {
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+
+  .timeline-header h3 {
+    font-size: 1.12rem;
+    line-height: 1.4;
+  }
+
+  .icon-text {
+    font-size: 1.25rem;
+    margin-right: 6px;
+  }
+
+  .project-info,
+  .idea-content,
+  .timeline-content,
+  .qa-item,
+  .report-content {
+    border-radius: 18px;
+  }
+
+  .project-info,
+  .report-content {
+    padding: 14px;
+  }
+
+  .idea-content {
+    padding: 16px;
+    line-height: 1.72;
+    font-size: 0.96rem;
+  }
+
+  .timeline {
+    padding-left: 18px;
+  }
+
+  .timeline::before {
+    left: 5px;
+  }
+
+  .timeline-item {
+    margin-bottom: 22px;
+  }
+
+  .timeline-dot {
+    left: -16px;
+    width: 14px;
+    height: 14px;
+    border-width: 2px;
+  }
+
+  .timeline-content {
+    padding: 14px;
+  }
+
+  .round-title {
+    font-size: 1.02rem;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+  }
+
+  .section-header {
+    align-items: flex-start;
+    padding: 10px 12px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+  }
+
+  .section-header h4 {
+    font-size: 0.98rem;
+    line-height: 1.45;
+  }
+
+  .qa-list {
+    gap: 10px;
+  }
+
+  .qa-item {
+    padding: 12px;
+  }
+
+  .question,
+  .answer {
+    font-size: 0.94rem;
+    line-height: 1.65;
+  }
+
+  .answer {
+    padding: 8px 10px;
+    border-radius: 12px;
+  }
+
+  .markdown-body h1 {
+    font-size: 1.28rem;
+  }
+
+  .markdown-body h2 {
+    font-size: 1.14rem;
+  }
+
+  .markdown-body h3 {
+    font-size: 1rem;
+  }
+
+  .markdown-body pre {
+    padding: 12px;
+    border-radius: 14px;
+    font-size: 0.84em;
+  }
+
+  .markdown-body table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .markdown-body table th,
+  .markdown-body table td {
+    min-width: 120px;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
 }
 </style>
