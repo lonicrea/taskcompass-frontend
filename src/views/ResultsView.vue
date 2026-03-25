@@ -28,12 +28,12 @@
         繼續細化需求
       </el-button>
       <el-button
-        @click="shareProject"
+        @click="copyPrompt"
         type="info"
         size="large"
         :disabled="loading"
       >
-        分享任務
+        複製提示詞
       </el-button>
       <el-button
         @click="viewOverview"
@@ -270,26 +270,25 @@ const continueRefinement = () => {
   refinementFeedback.value = ''
 }
 
-// 分享项目
-const shareProject = async () => {
-  const currentApiUrl = localStorage.getItem('clarityai_api_url') || 'http://127.0.0.1:5000/api'
-  
-  // 将后端地址编码后添加到链接中
-  const encodedApiUrl = btoa(encodeURIComponent(currentApiUrl))
-  const shareUrl = `${window.location.origin}/overview/${sessionId}?api=${encodedApiUrl}`
-  
+const copyPrompt = async () => {
+  const promptText = reportContent.value?.trim()
+
+  if (!promptText) {
+    ElMessage.warning('目前沒有可複製的提示詞內容')
+    return
+  }
+
   try {
-    await navigator.clipboard.writeText(shareUrl)
-    ElMessage.success('連結已複製到剪貼簿，可以直接分享給其他人。')
+    await navigator.clipboard.writeText(promptText)
+    ElMessage.success('提示詞已複製到剪貼簿')
   } catch (error) {
-    // 降级方案
     const textarea = document.createElement('textarea')
-    textarea.value = shareUrl
+    textarea.value = promptText
     document.body.appendChild(textarea)
     textarea.select()
     document.execCommand('copy')
     document.body.removeChild(textarea)
-    ElMessage.success('連結已複製到剪貼簿，可以直接分享給其他人。')
+    ElMessage.success('提示詞已複製到剪貼簿')
   }
 }
 
