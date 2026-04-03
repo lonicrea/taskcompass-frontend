@@ -2,11 +2,36 @@
   <div class="home">
     <section class="hero-panel">
       <div class="hero-copy">
-        <span class="hero-kicker">AI Requirement Studio</span>
-        <h1>讓你的想法<br>精準起飛</h1>
+        <span class="hero-kicker">需求整理系統</span>
+        <div class="hero-intro-line">
+          <span class="hero-intro-dot"></span>
+          <span>協助你把想法整理成可執行的需求內容</span>
+        </div>
+        <h1>
+          <span class="hero-line">不知道怎麼問 <em>AI</em>？</span>
+          <span class="hero-line">那就讓 AI 先來問你</span>
+        </h1>
         <p class="hero-lead">
-          透過多輪互動式對話，把模糊需求整理成清楚、可執行、可交給 AI 繼續工作的任務簡報。
+          任務羅盤會逐步追問你的需求，把模糊想法整理成可直接使用的提示詞與需求簡報。
         </p>
+
+        <div class="hero-proof-grid">
+          <article class="hero-proof-card">
+            <span class="hero-proof-label">步驟一</span>
+            <strong>先輸入你的初步想法</strong>
+            <p>只要先說明你想做什麼，不需要一開始就寫得很完整。</p>
+          </article>
+          <article class="hero-proof-card">
+            <span class="hero-proof-label">步驟二</span>
+            <strong>系統逐步整理需求</strong>
+            <p>系統會透過多輪提問補齊目標、受眾、限制與交付形式。</p>
+          </article>
+          <article class="hero-proof-card">
+            <span class="hero-proof-label">步驟三</span>
+            <strong>取得可直接使用的結果</strong>
+            <p>最後會產生提示詞與需求簡報，方便後續交給 AI 或團隊使用。</p>
+          </article>
+        </div>
 
         <div class="hero-actions">
           <button class="cta-primary" type="button" @click="scrollToIntake">開始整理需求</button>
@@ -36,13 +61,17 @@
           </div>
 
           <div class="launch-rocket">
+            <div class="rocket-aura"></div>
             <div class="rocket-cap"></div>
             <div class="rocket-body">
+              <span class="rocket-stripe"></span>
+              <span class="rocket-body-shine"></span>
               <span class="rocket-window"></span>
               <span class="rocket-window small"></span>
             </div>
             <div class="rocket-fin left"></div>
             <div class="rocket-fin right"></div>
+            <div class="rocket-thruster"></div>
             <div class="rocket-flame"></div>
             <div class="rocket-clouds">
               <span></span>
@@ -64,9 +93,9 @@
 
     <section class="intake-section" ref="intakeSection">
       <div class="section-heading">
-        <span class="section-kicker">Start With A Raw Idea</span>
-        <h2>把一句話，變成一份任務簡報</h2>
-        <p>你只要輸入初步想法，TaskCompass 會用問答逐步拆解需求、受眾、風格、限制與輸出形式。</p>
+        <span class="section-kicker">開始整理</span>
+        <h2>從一句初步想法開始整理需求</h2>
+        <p>輸入你的想法後，系統會逐步確認目標、受眾、限制與交付形式，整理成完整內容。</p>
       </div>
 
       <el-card class="idea-input-card">
@@ -114,38 +143,38 @@
     <section class="features-section" ref="featuresSection">
       <div class="section-heading section-heading-shell">
         <div>
-          <span class="section-kicker">Mission Control</span>
-          <h2>像在搭建一座任務控制台，而不是填一張表</h2>
+          <span class="section-kicker">功能說明</span>
+          <h2>把需求整理流程清楚分成三個步驟</h2>
         </div>
         <p>
-          新版本把需求整理拆成推進階段、決策訊號與交付出口三個面向，讓使用者看見任務如何被收斂，而不是只看到一串問題。
+          系統會依序幫你確認需求方向、補足缺漏資訊，最後輸出可直接使用的提示詞與需求簡報。
         </p>
       </div>
 
       <div class="mission-shell">
         <el-card class="mission-path-card">
           <div class="mission-path-header">
-            <span class="mission-pill">任務推進路徑</span>
-            <span class="mission-mini-copy">從模糊概念到可執行輸出</span>
+            <span class="mission-pill">處理流程</span>
+            <span class="mission-mini-copy">從想法輸入到結果輸出</span>
           </div>
 
           <div class="mission-path">
             <article class="path-step step-scan">
-              <span class="path-step-tag">Phase A</span>
-              <h4>掃描原始意圖</h4>
-              <p>先判讀你真正想產出的成果樣貌，辨識題目類型、使用情境與交付重點，避免一開始就問錯方向。</p>
+              <span class="path-step-tag">步驟 1</span>
+              <h4>確認需求方向</h4>
+              <p>先了解你希望完成的成果、主要使用對象，以及這項需求的基本目標。</p>
             </article>
 
             <article class="path-step step-fold">
-              <span class="path-step-tag">Phase B</span>
-              <h4>折疊雜訊與缺口</h4>
-              <p>把散亂描述拆成可追問的模組，缺少的條件由系統標記，已明確的偏好則被保留下來作為後續約束。</p>
+              <span class="path-step-tag">步驟 2</span>
+              <h4>補足重要資訊</h4>
+              <p>針對尚未說清楚的部分繼續提問，整理限制條件、風格偏好與交付形式。</p>
             </article>
 
             <article class="path-step step-shape">
-              <span class="path-step-tag">Phase C</span>
-              <h4>塑形成交付藍圖</h4>
-              <p>最終輸出不是聊天紀錄，而是一份有上下文、有假設、有執行方向的任務藍圖，能直接接給下一個 AI 或團隊成員。</p>
+              <span class="path-step-tag">步驟 3</span>
+              <h4>產生最終結果</h4>
+              <p>將整理後的內容輸出為可直接使用的提示詞與需求簡報，方便後續執行與溝通。</p>
             </article>
           </div>
         </el-card>
@@ -154,43 +183,43 @@
           <el-card class="signal-panel">
             <div class="signal-header">
               <span class="signal-dot"></span>
-              <span>關鍵訊號板</span>
+              <span>系統特點</span>
             </div>
 
             <div class="signal-list">
               <div class="signal-item">
                 <div>
-                  <strong>偏好被保留</strong>
-                  <p>風格、受眾、篇幅與限制會被累積，不會在多輪對話中遺失。</p>
+                  <strong>保留需求重點</strong>
+                  <p>已確認的受眾、風格、篇幅與限制會被持續保留，不會在後續流程中遺失。</p>
                 </div>
-                <span class="signal-badge hot">LIVE</span>
+                <span class="signal-badge hot">保留</span>
               </div>
               <div class="signal-item">
                 <div>
-                  <strong>缺口被標記</strong>
-                  <p>未確認但重要的資訊會被點亮，必要時可由系統預設推測補足。</p>
+                  <strong>補足缺漏資訊</strong>
+                  <p>對於尚未確認但重要的部分，系統會繼續提問，必要時可用預設推測補足。</p>
                 </div>
-                <span class="signal-badge warm">FLAG</span>
+                <span class="signal-badge warm">補足</span>
               </div>
               <div class="signal-item">
                 <div>
-                  <strong>決策有脈絡</strong>
-                  <p>每一次補充、修改與追問，都會變成可追溯的上下文，而不是被下一輪覆蓋。</p>
+                  <strong>保存整理歷程</strong>
+                  <p>每一次補充與修改都會保留下來，方便回看整個需求整理過程。</p>
                 </div>
-                <span class="signal-badge cool">TRACE</span>
+                <span class="signal-badge cool">記錄</span>
               </div>
             </div>
           </el-card>
 
           <el-card class="delivery-panel">
-            <span class="delivery-kicker">Output Deck</span>
-            <h4>最後交付出去的是什麼？</h4>
-            <p>你會得到一份偏向執行層的任務文本，可直接拿去做提案、寫作、設計規劃、產品討論，或餵給下一個模型繼續工作。</p>
+            <span class="delivery-kicker">輸出結果</span>
+            <h4>系統最後會提供哪些內容？</h4>
+            <p>你會得到一份整理完成的需求文本，可直接拿去做提案、規劃、寫作，或作為下一個 AI 任務的輸入內容。</p>
 
             <div class="delivery-rail">
-              <span>Brief</span>
-              <span>Assumption Map</span>
-              <span>Instruction Block</span>
+              <span>提示詞</span>
+              <span>需求簡報</span>
+              <span>任務總覽</span>
             </div>
           </el-card>
         </div>
@@ -204,6 +233,11 @@ import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { apiService } from '@/utils/api'
+
+const STORAGE_KEYS = {
+  apiUrl: 'taskcompass_api_url',
+  projects: 'taskcompass_projects'
+}
 
 const router = useRouter()
 const idea = ref('')
@@ -219,7 +253,7 @@ onMounted(() => {
   if (encodedApiUrl) {
     try {
       const apiUrl = decodeURIComponent(atob(encodedApiUrl))
-      localStorage.setItem('clarityai_api_url', apiUrl)
+      localStorage.setItem(STORAGE_KEYS.apiUrl, apiUrl)
       ElMessage.success('已自動設定後端伺服器位址')
       window.history.replaceState({}, '', window.location.pathname)
     } catch (error) {
@@ -254,10 +288,10 @@ const startProcess = async () => {
       lastVisited: new Date().toISOString()
     }
 
-    const savedProjects = localStorage.getItem('clarityai_projects')
+    const savedProjects = localStorage.getItem(STORAGE_KEYS.projects)
     const projects = savedProjects ? JSON.parse(savedProjects) : []
     projects.push(project)
-    localStorage.setItem('clarityai_projects', JSON.stringify(projects))
+    localStorage.setItem(STORAGE_KEYS.projects, JSON.stringify(projects))
 
     router.push({ name: 'Questions', params: { sessionId } })
   } catch (error) {
@@ -332,9 +366,37 @@ const startProcess = async () => {
 .hero-copy h1 {
   margin: 22px 0 18px;
   color: var(--brand-pink);
-  font-size: clamp(3rem, 6vw, 5.2rem);
+  font-size: clamp(2.7rem, 5.2vw, 4.5rem);
   line-height: 0.95;
   letter-spacing: -0.04em;
+}
+
+.hero-intro-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  color: var(--ink-body);
+  font-size: 0.94rem;
+  font-weight: 700;
+}
+
+.hero-intro-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand-pink), var(--brand-orange));
+  box-shadow: 0 0 0 8px rgba(255, 115, 184, 0.12);
+}
+
+.hero-copy h1 em {
+  font-style: normal;
+  color: #7a3cff;
+}
+
+.hero-line {
+  display: block;
+  white-space: nowrap;
 }
 
 .hero-lead {
@@ -342,6 +404,46 @@ const startProcess = async () => {
   margin: 0;
   color: var(--ink-body);
   font-size: 1.16rem;
+}
+
+.hero-proof-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 28px;
+  max-width: 760px;
+}
+
+.hero-proof-card {
+  padding: 16px 16px 18px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 244, 250, 0.84));
+  border: 1px solid rgba(220, 194, 231, 0.36);
+  box-shadow: 0 16px 34px rgba(136, 95, 164, 0.08);
+}
+
+.hero-proof-label {
+  display: inline-flex;
+  margin-bottom: 10px;
+  color: var(--brand-pink);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.hero-proof-card strong {
+  display: block;
+  color: var(--ink-strong);
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.hero-proof-card p {
+  margin: 8px 0 0;
+  color: var(--ink-body);
+  font-size: 0.92rem;
+  line-height: 1.6;
 }
 
 .hero-actions {
@@ -415,6 +517,7 @@ const startProcess = async () => {
   bottom: 16px;
   width: min(100%, 500px);
   height: 430px;
+  filter: drop-shadow(0 28px 44px rgba(108, 63, 162, 0.18));
 }
 
 .launch-card {
@@ -424,9 +527,33 @@ const startProcess = async () => {
   width: 100%;
   height: 126px;
   border-radius: 32px;
-  background: linear-gradient(180deg, #fdfcff 0%, #fff2fb 100%);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 243, 251, 0.94) 100%);
   border: 6px solid #4650e7;
   box-shadow: 0 30px 50px rgba(80, 70, 203, 0.2);
+}
+
+.launch-card::before {
+  content: '';
+  position: absolute;
+  inset: 10px 16px auto;
+  height: 22px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0));
+  opacity: 0.9;
+}
+
+.launch-card::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  width: 120px;
+  height: 18px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(70, 80, 231, 0.3), rgba(70, 80, 231, 0.05));
+  filter: blur(4px);
 }
 
 .launch-card-grid {
@@ -468,6 +595,20 @@ const startProcess = async () => {
   bottom: 82px;
   width: 154px;
   transform: translateX(-50%);
+  isolation: isolate;
+}
+
+.rocket-aura {
+  position: absolute;
+  left: 50%;
+  top: 42px;
+  width: 220px;
+  height: 220px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(105, 121, 255, 0.24), rgba(255, 131, 193, 0.08) 48%, transparent 74%);
+  filter: blur(10px);
+  z-index: -3;
 }
 
 .rocket-cap {
@@ -478,6 +619,19 @@ const startProcess = async () => {
   border-right: 52px solid transparent;
   border-bottom: 80px solid #4b46e3;
   filter: drop-shadow(0 18px 24px rgba(72, 70, 227, 0.24));
+  position: relative;
+}
+
+.rocket-cap::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 72px;
+  width: 92px;
+  height: 14px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 186, 98, 0), rgba(255, 186, 98, 0.95), rgba(255, 186, 98, 0));
 }
 
 .rocket-body {
@@ -486,19 +640,49 @@ const startProcess = async () => {
   height: 220px;
   margin-top: -12px;
   border-radius: 70px;
-  background: linear-gradient(180deg, #554af0 0%, #2d28cb 100%);
-  box-shadow: 0 24px 42px rgba(72, 70, 227, 0.26);
+  background:
+    radial-gradient(circle at 28% 24%, rgba(135, 137, 255, 0.46), transparent 34%),
+    linear-gradient(180deg, #6558ff 0%, #4238e6 38%, #2d28cb 100%);
+  box-shadow:
+    inset 0 10px 18px rgba(255, 255, 255, 0.08),
+    inset 0 -18px 26px rgba(21, 14, 101, 0.18),
+    0 24px 42px rgba(72, 70, 227, 0.26);
+  overflow: hidden;
 }
 
 .rocket-body::before {
   content: '';
   position: absolute;
-  top: 18px;
-  left: 22px;
-  right: 22px;
-  height: 5px;
+  top: 22px;
+  left: 18px;
+  right: 18px;
+  height: 6px;
   border-radius: 999px;
-  background: linear-gradient(90deg, transparent, #ffb24d, transparent);
+  background: linear-gradient(90deg, rgba(255, 178, 77, 0), rgba(255, 178, 77, 0.92), rgba(255, 178, 77, 0));
+}
+
+.rocket-stripe {
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  width: 26px;
+  height: 104px;
+  transform: translateX(-50%);
+  border-radius: 20px 20px 30px 30px;
+  background: linear-gradient(180deg, rgba(255, 214, 122, 0.16), rgba(255, 193, 91, 0.45), rgba(255, 175, 60, 0.78));
+  box-shadow: inset 0 10px 18px rgba(255, 244, 204, 0.18);
+}
+
+.rocket-body-shine {
+  position: absolute;
+  top: 22px;
+  right: 26px;
+  width: 24px;
+  height: 150px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0));
+  transform: rotate(-6deg);
+  opacity: 0.7;
 }
 
 .rocket-window {
@@ -511,7 +695,9 @@ const startProcess = async () => {
   border-radius: 50%;
   background: #fffaf8;
   border: 8px solid #ff6dc5;
-  box-shadow: 0 0 0 7px rgba(255, 109, 197, 0.16);
+  box-shadow:
+    inset 0 8px 14px rgba(255, 216, 244, 0.45),
+    0 0 0 7px rgba(255, 109, 197, 0.16);
 }
 
 .rocket-window.small {
@@ -526,31 +712,68 @@ const startProcess = async () => {
   bottom: 54px;
   width: 52px;
   height: 114px;
-  background: linear-gradient(180deg, #ffd06f, #ffb24d);
-  border-radius: 28px;
+  background: linear-gradient(180deg, #ffd777, #ffb24d 56%, #ff9f2f 100%);
+  border-radius: 28px 28px 34px 34px;
   z-index: -1;
+  box-shadow: inset 0 8px 14px rgba(255, 247, 211, 0.28);
 }
 
 .rocket-fin.left {
   left: -24px;
-  transform: rotate(12deg);
+  transform: rotate(12deg) skewY(4deg);
 }
 
 .rocket-fin.right {
   right: -24px;
-  transform: rotate(-12deg);
+  transform: rotate(-12deg) skewY(-4deg);
+}
+
+.rocket-thruster {
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  width: 56px;
+  height: 44px;
+  transform: translateX(-50%);
+  border-radius: 18px 18px 26px 26px;
+  background: linear-gradient(180deg, #ffdb8c, #ffb24d);
+  box-shadow:
+    inset 0 8px 14px rgba(255, 251, 231, 0.34),
+    0 14px 22px rgba(255, 171, 58, 0.18);
 }
 
 .rocket-flame {
   position: absolute;
   left: 50%;
-  bottom: -8px;
-  width: 64px;
-  height: 88px;
+  bottom: -14px;
+  width: 72px;
+  height: 96px;
   transform: translateX(-50%);
   border-radius: 28px 28px 36px 36px;
-  background: linear-gradient(180deg, rgba(255, 231, 173, 0.84), rgba(255, 184, 65, 0.94));
+  background: linear-gradient(180deg, rgba(255, 244, 194, 0.94), rgba(255, 187, 70, 0.98) 46%, rgba(255, 128, 47, 0.95));
   filter: blur(1px);
+}
+
+.rocket-flame::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 10px;
+  width: 34px;
+  height: 62px;
+  transform: translateX(-50%);
+  border-radius: 20px 20px 30px 30px;
+  background: linear-gradient(180deg, rgba(255, 255, 232, 0.92), rgba(255, 216, 96, 0.86));
+}
+
+.rocket-flame::after {
+  content: '';
+  position: absolute;
+  inset: auto 8px -12px;
+  height: 28px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 182, 72, 0.56), transparent 70%);
+  filter: blur(8px);
 }
 
 .rocket-clouds {
@@ -1007,6 +1230,11 @@ const startProcess = async () => {
   .intake-grid {
     gap: 18px;
   }
+
+  .hero-proof-grid {
+    grid-template-columns: 1fr;
+    max-width: none;
+  }
 }
 
 @media (max-width: 1080px) {
@@ -1042,11 +1270,16 @@ const startProcess = async () => {
   }
 
   .hero-copy h1 {
-    font-size: 3.2rem;
+    font-size: 2.8rem;
   }
 
   .hero-lead {
     font-size: 1rem;
+  }
+
+  .hero-intro-line {
+    margin-top: 14px;
+    font-size: 0.88rem;
   }
 
   .hero-chips span {
@@ -1120,8 +1353,8 @@ const startProcess = async () => {
 
   .hero-copy h1 {
     margin: 18px 0 14px;
-    font-size: clamp(2.35rem, 12vw, 3rem);
-    line-height: 0.98;
+    font-size: clamp(1.92rem, 8vw, 2.4rem);
+    line-height: 1.08;
   }
 
   .hero-lead {
@@ -1132,6 +1365,24 @@ const startProcess = async () => {
   .hero-actions {
     gap: 12px;
     margin-top: 22px;
+  }
+
+  .hero-proof-grid {
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .hero-proof-card {
+    padding: 14px;
+    border-radius: 18px;
+  }
+
+  .hero-proof-card strong {
+    font-size: 0.96rem;
+  }
+
+  .hero-proof-card p {
+    font-size: 0.88rem;
   }
 
   .cta-primary,
@@ -1204,6 +1455,12 @@ const startProcess = async () => {
     width: 98px;
   }
 
+  .rocket-aura {
+    width: 150px;
+    height: 150px;
+    top: 32px;
+  }
+
   .rocket-cap {
     border-left-width: 32px;
     border-right-width: 32px;
@@ -1237,6 +1494,12 @@ const startProcess = async () => {
     border-width: 4px;
   }
 
+  .rocket-stripe {
+    bottom: 18px;
+    width: 18px;
+    height: 72px;
+  }
+
   .rocket-fin {
     width: 34px;
     height: 74px;
@@ -1254,6 +1517,12 @@ const startProcess = async () => {
   .rocket-flame {
     width: 42px;
     height: 62px;
+  }
+
+  .rocket-thruster {
+    bottom: 18px;
+    width: 40px;
+    height: 30px;
   }
 
   .rocket-clouds {
@@ -1439,7 +1708,12 @@ const startProcess = async () => {
   }
 
   .hero-copy h1 {
-    font-size: 2.16rem;
+    font-size: 1.82rem;
+  }
+
+  .hero-intro-line {
+    align-items: flex-start;
+    line-height: 1.5;
   }
 }
 </style>

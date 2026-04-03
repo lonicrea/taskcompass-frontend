@@ -158,6 +158,10 @@ import { ElMessage } from 'element-plus'
 import { useRoute, useRouter } from 'vue-router'
 import { apiService } from '@/utils/api'
 
+const STORAGE_KEYS = {
+  apiUrl: 'taskcompass_api_url'
+}
+
 const route = useRoute()
 const router = useRouter()
 const sessionId = route.params.sessionId
@@ -181,7 +185,7 @@ onMounted(() => {
   if (encodedApiUrl) {
     try {
       const apiUrl = decodeURIComponent(atob(encodedApiUrl))
-      localStorage.setItem('clarityai_api_url', apiUrl)
+      localStorage.setItem(STORAGE_KEYS.apiUrl, apiUrl)
       ElMessage.success('已自動設定後端伺服器位址')
       // 清除 URL 中的参数
       window.history.replaceState({}, '', window.location.pathname + window.location.hash)

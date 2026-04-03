@@ -7,6 +7,11 @@ import { Document, Setting, HomeFilled, CircleCheck, CircleClose } from '@elemen
 import { apiService } from '@/utils/api'
 
 const OFFICIAL_API_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:5000/api'
+const STORAGE_KEYS = {
+  projects: 'taskcompass_projects',
+  apiUrl: 'taskcompass_api_url',
+  apiConfig: 'taskcompass_api_config'
+}
 
 const router = useRouter()
 const showProjectList = ref(false)
@@ -24,12 +29,12 @@ const connectionStatus = ref('')
 const testingConnection = ref(false)
 
 onMounted(() => {
-  const savedProjects = localStorage.getItem('clarityai_projects')
+  const savedProjects = localStorage.getItem(STORAGE_KEYS.projects)
   if (savedProjects) {
     projects.value = JSON.parse(savedProjects)
   }
 
-  const savedApiUrl = localStorage.getItem('clarityai_api_url')
+  const savedApiUrl = localStorage.getItem(STORAGE_KEYS.apiUrl)
   if (savedApiUrl) {
     apiBaseUrl.value = savedApiUrl
     if (savedApiUrl !== OFFICIAL_API_URL) {
@@ -37,7 +42,7 @@ onMounted(() => {
     }
   }
 
-  const savedApiConfig = localStorage.getItem('clarityai_api_config')
+  const savedApiConfig = localStorage.getItem(STORAGE_KEYS.apiConfig)
   if (savedApiConfig) {
     const config = JSON.parse(savedApiConfig)
     apiConfigType.value = config.type || 'default'
@@ -52,7 +57,7 @@ const goToHome = () => {
 }
 
 const viewProjects = () => {
-  const savedProjects = localStorage.getItem('clarityai_projects')
+  const savedProjects = localStorage.getItem(STORAGE_KEYS.projects)
   projects.value = savedProjects ? JSON.parse(savedProjects) : []
   showProjectList.value = true
 }
@@ -71,7 +76,7 @@ const deleteProject = async (projectId, index) => {
 
     await apiService.deleteSession(projectId)
     projects.value.splice(index, 1)
-    localStorage.setItem('clarityai_projects', JSON.stringify(projects.value))
+    localStorage.setItem(STORAGE_KEYS.projects, JSON.stringify(projects.value))
     ElMessage.success('任務已刪除')
   } catch (error) {
     if (error === 'cancel' || error === 'close') return
@@ -113,7 +118,7 @@ const saveSettings = () => {
   const normalizedBaseUrl = customApiBaseUrl.value.trim() || 'https://api.openai.com/v1'
   const normalizedModel = customModel.value.trim() || 'gpt-4o-mini'
 
-  localStorage.setItem('clarityai_api_url', finalUrl)
+  localStorage.setItem(STORAGE_KEYS.apiUrl, finalUrl)
 
   const apiConfig = {
     type: apiConfigType.value,
@@ -121,7 +126,7 @@ const saveSettings = () => {
     baseUrl: apiConfigType.value === 'custom' ? normalizedBaseUrl : '',
     model: apiConfigType.value === 'custom' ? normalizedModel : ''
   }
-  localStorage.setItem('clarityai_api_config', JSON.stringify(apiConfig))
+  localStorage.setItem(STORAGE_KEYS.apiConfig, JSON.stringify(apiConfig))
 
   if (apiConfigType.value === 'custom') {
     customApiBaseUrl.value = normalizedBaseUrl

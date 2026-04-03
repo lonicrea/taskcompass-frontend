@@ -103,6 +103,11 @@ import { apiService } from '@/utils/api'
 import { ArrowRight } from '@element-plus/icons-vue'
 import MarkdownIt from 'markdown-it'
 
+const STORAGE_KEYS = {
+  apiUrl: 'taskcompass_api_url',
+  projects: 'taskcompass_projects'
+}
+
 const route = useRoute()
 const router = useRouter()
 const sessionId = route.params.sessionId
@@ -226,7 +231,7 @@ onMounted(async () => {
   if (encodedApiUrl) {
     try {
       const apiUrl = decodeURIComponent(atob(encodedApiUrl))
-      localStorage.setItem('clarityai_api_url', apiUrl)
+      localStorage.setItem(STORAGE_KEYS.apiUrl, apiUrl)
       ElMessage.success('已自動設定後端伺服器位址')
     } catch (error) {
       console.error('Error parsing API URL:', error)
@@ -247,13 +252,13 @@ onMounted(async () => {
     }
     
     // 更新项目最后访问时间
-    const savedProjects = localStorage.getItem('clarityai_projects')
+    const savedProjects = localStorage.getItem(STORAGE_KEYS.projects)
     if (savedProjects) {
       let projects = JSON.parse(savedProjects)
       const projectIndex = projects.findIndex(p => p.id === sessionId)
       if (projectIndex > -1) {
         projects[projectIndex].lastVisited = new Date().toISOString()
-        localStorage.setItem('clarityai_projects', JSON.stringify(projects))
+        localStorage.setItem(STORAGE_KEYS.projects, JSON.stringify(projects))
       }
     }
   } catch (error) {

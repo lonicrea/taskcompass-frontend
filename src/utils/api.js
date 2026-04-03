@@ -1,10 +1,14 @@
 import axios from 'axios'
 
 const OFFICIAL_API_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:5000/api'
+const STORAGE_KEYS = {
+  apiUrl: 'taskcompass_api_url',
+  apiConfig: 'taskcompass_api_config'
+}
 
 // 从 localStorage 获取 API 地址
 const getApiBaseUrl = () => {
-  const savedUrl = localStorage.getItem('clarityai_api_url')
+  const savedUrl = localStorage.getItem(STORAGE_KEYS.apiUrl)
   return savedUrl || OFFICIAL_API_URL
 }
 
@@ -14,7 +18,7 @@ const getCustomApiConfig = () => {
     return null
   }
 
-  const savedConfig = localStorage.getItem('clarityai_api_config')
+  const savedConfig = localStorage.getItem(STORAGE_KEYS.apiConfig)
   if (savedConfig) {
     const config = JSON.parse(savedConfig)
     if (config.type === 'custom') {
